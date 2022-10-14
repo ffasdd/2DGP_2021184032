@@ -2,7 +2,7 @@ from pico2d import *
 import game_framework
 import intro_state
 import game_manual_state
-
+import stage_1
 running = True
 
 def enter():
@@ -34,7 +34,7 @@ def handle_events():
                 case pico2d.SDLK_ESCAPE:
                     game_framework.change_state(game_manual_state)
                 case pico2d.SDLK_1:
-                    game_framework.change_state(intro_state)
+                    game_framework.change_state(stage_1)
                 case pico2d.SDLK_2:
                     game_framework.change_state(intro_state)
                 case pico2d.SDLK_3:
