@@ -7,7 +7,7 @@ running = True
 
 class BG:
     def __init__(self):
-        self.image = load_image('resource/background1.png')
+        self.image = load_image('resource/background2.png')
 
     def draw(self):
         self.image.draw(530, 510)
@@ -52,7 +52,7 @@ class Player:
 
 class Mouse:
     def __init__(self):
-        self.x, self.y = 0,400
+        self.x, self.y = 0,450
         self.state = 0 # 0=walk/1=attack/2=die
         self.frame = 0
         self.image = load_image('resource/player/mouse.png')
