@@ -33,7 +33,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
                 game_framework.quit()
-            elif event.key == SDLK_i:
+            elif event.key == SDLK_SPACE:
                 game_framework.change_state(game_manual_state)
 
 def pause():
