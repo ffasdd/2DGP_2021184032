@@ -120,7 +120,20 @@ class Rhino:
             self.image.clip_draw(int(self.frame) * 128, 0, 128,149, self.x, self.y,166.4,193.7)
 
 class Mace_1():
-    pass
+    def __init__(self):
+        global x
+        self.x, self.y = x, 450
+        self.frame = 0
+        self.image = load_image('resource/mace/1/m01_1.png')
+
+    def update(self):
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
+        self.x += 1 * RUN_SPEED_PPS * game_framework.frame_time/0.3
+        if self.x > 1060:
+            self.x = 1060
+
+    def draw(self):
+        self.image.clip_draw(int(self.frame) * 65, 0, 65, 57, self.x, self.y, 131.6, 114)
 
 class Mace_2():
     pass
@@ -185,6 +198,9 @@ def draw_world():
     for rhino in rhinos:
         rhino.draw()
 
+    for mace_1 in maces_1:
+        mace_1.draw()
+
 def enter():
     global player, running, background, ui
     ui= UI()
@@ -200,6 +216,8 @@ def exit():
         del dragon
     for rhino in rhinos:
         del rhino
+    for mace_1 in maces_1:
+        del mace_1
     del background
     del player
     pass
@@ -211,6 +229,8 @@ def update():
         dragon.update()
     for rhino in rhinos:
         rhino.update()
+    for mace_1 in maces_1:
+        mace_1.update()
     player.update()
 def draw():
     clear_canvas()
