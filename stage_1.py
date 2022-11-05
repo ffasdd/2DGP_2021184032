@@ -136,7 +136,19 @@ class Mace_1():
         self.image.clip_draw(int(self.frame) * 65, 0, 65, 57, self.x, self.y, 131.6, 114)
 
 class Mace_2():
-    pass
+    def __init__(self):
+        global x
+        self.x, self.y = x, 450
+        self.frame = 0
+        self.image = load_image('resource/mace/2/m02.png')
+
+    def update(self):
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
+        if self.x > 1060:
+            self.x = 1060
+
+    def draw(self):
+        self.image.clip_draw(int(self.frame) * 161, 0, 161, 71, self.x, self.y, 131.6, 114)
 
 class Mace_3():
     pass
@@ -163,9 +175,9 @@ def handle_events():
                     add_rhinos()
                 case pico2d.SDLK_j:
                     attack_1()
-                case pico2d.SDLK_j:
+                case pico2d.SDLK_k:
                     attack_2()
-                case pico2d.SDLK_j:
+                case pico2d.SDLK_l:
                     attack_3()
                 case pico2d.SDLK_ESCAPE:
                     exit()
@@ -200,6 +212,10 @@ def draw_world():
 
     for mace_1 in maces_1:
         mace_1.draw()
+    for mace_2 in maces_2:
+        mace_2.draw()
+    for mace_3 in maces_3:
+        mace_3.draw()
 
 def enter():
     global player, running, background, ui
@@ -218,6 +234,10 @@ def exit():
         del rhino
     for mace_1 in maces_1:
         del mace_1
+    for mace_2 in maces_2:
+        del mace_2
+    for mace_3 in maces_3:
+        del mace_3
     del background
     del player
     pass
@@ -231,6 +251,10 @@ def update():
         rhino.update()
     for mace_1 in maces_1:
         mace_1.update()
+    for mace_2 in maces_2:
+        mace_2.update()
+    for mace_3 in maces_3:
+        mace_3.update()
     player.update()
 def draw():
     clear_canvas()
