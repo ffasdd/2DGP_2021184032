@@ -148,7 +148,7 @@ class Mace_2():
             self.x = 1060
 
     def draw(self):
-        self.image.clip_draw(int(self.frame) * 161, 0, 161, 71, self.x, self.y, 131.6, 114)
+        self.image.clip_draw(int(self.frame) * 161, 0, 161, 71, self.x+230, self.y-100, 330,228)
 
 class Mace_3():
     pass
