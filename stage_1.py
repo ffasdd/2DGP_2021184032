@@ -37,6 +37,7 @@ class Player:
         self.direction=1
         self.frame = 0
         self.image = load_image('resource/player/player_move.png')
+        self.font = load_font('ENCR10B.TTF', 40)
 
     def update(self):
         global x
@@ -66,6 +67,8 @@ class Player:
                 self.image.clip_draw(3, 0, 210, 120, self.x, self.y,307.5,180)
             elif dir == -1:
                 self.image.clip_draw(3, 120, 210, 120, self.x, self.y,307.5,180)
+        self.font.draw(90,260, f'{food}', (255, 255, 255))
+        self.font.draw(800,260, f'{mana}', (255, 255, 255))
 
 
 class Mouse:
@@ -141,20 +144,40 @@ class Mace_2():
         self.x, self.y = x, 450
         self.frame = 0
         self.image = load_image('resource/mace/2/m02.png')
+        self.time = 0.0
 
     def update(self):
+        self.time +=0.1
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
         if self.x > 1060:
             self.x = 1060
 
     def draw(self):
-        self.image.clip_draw(int(self.frame) * 161, 0, 161, 71, self.x+230, self.y-100, 330,228)
+        if self.time<6:
+            self.image.clip_draw(int(self.frame) * 161, 0, 161, 71, self.x+230, self.y-100, 330,228)
+
 
 class Mace_3():
-    pass
+    def __init__(self):
+        global x
+        self.x, self.y = x, 450
+        self.frame = 0
+        self.image = load_image('resource/mace/3/m09.png')
+        self.time = 0.0
+
+    def update(self):
+        self.time += 0.1
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
+        if self.x > 1060:
+            self.x = 1060
+
+    def draw(self):
+        if self.time < 6:
+            self.image.clip_draw(int(self.frame) * 91, 0, 91, 86, self.x-10, self.y + 50, 182,172)
+
 
 def handle_events():
-    global running, dir, move,mouse_num
+    global running, dir, move
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -187,19 +210,27 @@ def handle_events():
 
 player = None
 background =None
+
 mouses = []
 dragons = []
 rhinos = []
+
 maces_1 =[]
 maces_2=[]
 maces_3=[]
+
+food = 40
+mana=100
+
 ui =None
 move = False
 running = True
 dir = 0
 x =0
 
+
 def draw_world():
+    global font
     background.draw()
     ui.draw()
     player.draw()
@@ -216,6 +247,7 @@ def draw_world():
         mace_2.draw()
     for mace_3 in maces_3:
         mace_3.draw()
+
 
 def enter():
     global player, running, background, ui
