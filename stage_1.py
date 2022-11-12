@@ -177,7 +177,7 @@ class Mace_3():
 
 
 def handle_events():
-    global running, dir, move
+    global running, dir, move, food, mana
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -191,17 +191,29 @@ def handle_events():
                     move = True
                     dir = 1
                 case pico2d.SDLK_KP_1:
-                    add_mouse()
+                    if food >=1:
+                        add_mouse()
+                        food =food-1
                 case pico2d.SDLK_KP_2:
-                    add_dragon()
+                    if food >=20:
+                        add_dragon()
+                        food =food-20
                 case pico2d.SDLK_KP_3:
-                    add_rhinos()
+                    if food >=30:
+                        add_rhinos()
+                        food =food-30
                 case pico2d.SDLK_j:
-                    attack_1()
+                    if mana >= 9:
+                        attack_1()
+                        mana = mana-9
                 case pico2d.SDLK_k:
-                    attack_2()
+                    if mana >= 30:
+                        attack_2()
+                        mana = mana-30
                 case pico2d.SDLK_l:
-                    attack_3()
+                    if mana >= 50:
+                        attack_1()
+                        mana = mana-50
                 case pico2d.SDLK_ESCAPE:
                     exit()
                     game_framework.change_state(stage_select_state)
