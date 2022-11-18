@@ -38,6 +38,7 @@ class Player:
         self.frame = 0
         self.image = load_image('resource/player/player_move.png')
         self.font = load_font('ENCR10B.TTF', 40)
+        self.stamina = 100
 
     def update(self):
         global x
@@ -69,7 +70,7 @@ class Player:
                 self.image.clip_draw(3, 120, 210, 120, self.x, self.y,307.5,180)
         self.font.draw(90,260, f'{food}', (255, 255, 255))
         self.font.draw(800,260, f'{mana}', (255, 255, 255))
-
+        self.font.draw(self.x-30,self.y+90, f'{self.stamina}', (255, 255, 255))
 
 class Mouse:
     def __init__(self):
@@ -78,6 +79,8 @@ class Mouse:
         self.state = 0 # 0=walk/1=attack/2=die
         self.frame = 0
         self.image = load_image('resource/player/mouse.png')
+        self.font = load_font('ENCR10B.TTF', 40)
+        self.stamina = 20
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 6
@@ -87,6 +90,7 @@ class Mouse:
     def draw(self):
         if self.state == 0:
             self.image.clip_draw(int(self.frame) * 57, 0, 57,51, self.x, self.y,100,120)
+        self.font.draw(self.x-20,self.y+51, f'{self.stamina}', (255, 255, 255))
 
 class Dragon:
     def __init__(self):
@@ -95,6 +99,8 @@ class Dragon:
         self.state = 0 #  0=walk/1=attack/2=die
         self.frame = 0
         self.image = load_image('resource/player/dragon.png')
+        self.font = load_font('ENCR10B.TTF', 40)
+        self.stamina = 40
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
@@ -104,6 +110,8 @@ class Dragon:
     def draw(self):
         if self.state == 0:
             self.image.clip_draw(int(self.frame) * 170, 0, 170,170, self.x, self.y,200,200)
+        self.font.draw(self.x,self.y+85, f'{self.stamina}', (255, 255, 255))
+
 
 class Rhino:
     def __init__(self):
@@ -112,6 +120,8 @@ class Rhino:
         self.state = 0 #  0=walk/1=attack/2=die
         self.frame = 0
         self.image = load_image('resource/player/rhinoceros.png')
+        self.font = load_font('ENCR10B.TTF', 40)
+        self.stamina = 80
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
@@ -121,6 +131,8 @@ class Rhino:
     def draw(self):
         if self.state == 0:
             self.image.clip_draw(int(self.frame) * 128, 0, 128,149, self.x, self.y,166.4,193.7)
+        self.font.draw(self.x-10 , self.y + 74, f'{self.stamina}', (255, 255, 255))
+
 
 class Mace_1():
     def __init__(self):
@@ -212,8 +224,9 @@ def handle_events():
                         mana = mana-30
                 case pico2d.SDLK_l:
                     if mana >= 50:
-                        attack_1()
+                        attack_3()
                         mana = mana-50
+                        food = 40
                 case pico2d.SDLK_ESCAPE:
                     exit()
                     game_framework.change_state(stage_select_state)
