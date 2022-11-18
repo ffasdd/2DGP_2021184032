@@ -205,7 +205,7 @@ def handle_events():
                 case pico2d.SDLK_KP_1:
                     if food >=1:
                         add_mouse()
-                        food =food-1
+                        food =food-10
                 case pico2d.SDLK_KP_2:
                     if food >=20:
                         add_dragon()
@@ -253,9 +253,9 @@ running = True
 dir = 0
 x =0
 
-
+p_time =0.0
 def draw_world():
-    global font
+    global font, background
     background.draw()
     ui.draw()
     player.draw()
@@ -275,14 +275,14 @@ def draw_world():
 
 
 def enter():
-    global player, running, background, ui
+    global player, running, background, ui,p_time
+    p_time=0.0
     ui= UI()
     player = Player()
     background = BG()
     running = True
 
 def exit():
-    global player, background
     for mouse in mouses:
         del mouse
     for dragon in dragons:
@@ -295,11 +295,10 @@ def exit():
         del mace_2
     for mace_3 in maces_3:
         del mace_3
-    del background
-    del player
-    pass
+
 
 def update():
+    global p_time,mana,food
     for mouse in mouses:
         mouse.update()
     for dragon in dragons:
@@ -313,9 +312,18 @@ def update():
     for mace_3 in maces_3:
         mace_3.update()
     player.update()
+    p_time =p_time + 0.1
+
 def draw():
+    global p_time,food,mana
     clear_canvas()
     draw_world()
+    if p_time > 3.0:
+        if mana < 40:
+            mana = mana + 1
+        if food < 40:
+            food = food + 1
+        p_time = 0.0
     update_canvas()
 
 def pause():
