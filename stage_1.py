@@ -4,6 +4,7 @@ import pico2d
 from pico2d import *
 import game_framework
 import stage_select_state
+import game_world
 
 running = True
 
@@ -71,7 +72,10 @@ class Player:
         self.font.draw(90,260, f'{food}', (255, 255, 255))
         self.font.draw(800,260, f'{mana}', (255, 255, 255))
         self.font.draw(self.x-30,self.y+90, f'{self.stamina}', (255, 255, 255))
+        draw_rectangle(*self.get_bb())
 
+    def get_bb(self):
+        return self.x-60, self.y-50,self.x+60,self.y+80
 class Mouse:
     def __init__(self):
         global x
@@ -85,13 +89,16 @@ class Mouse:
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 6
         self.x += 1 * RUN_SPEED_PPS * game_framework.frame_time
-        if self.x > 1060:
-            self.x = 1060
+        if self.x > 900:
+            self.x = 900
     def draw(self):
         if self.state == 0:
             self.image.clip_draw(int(self.frame) * 57, 0, 57,51, self.x, self.y,100,120)
         self.font.draw(self.x-20,self.y+51, f'{self.stamina}', (255, 255, 255))
+        draw_rectangle(*self.get_bb())
 
+    def get_bb(self):
+        return self.x-30, self.y-50,self.x+30,self.y+50
 class Dragon:
     def __init__(self):
         global x
@@ -105,13 +112,16 @@ class Dragon:
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
         self.x += 1 * RUN_SPEED_PPS * game_framework.frame_time
-        if self.x > 1060:
-            self.x = 1060
+        if self.x > 900:
+            self.x = 900
     def draw(self):
         if self.state == 0:
             self.image.clip_draw(int(self.frame) * 170, 0, 170,170, self.x, self.y,200,200)
         self.font.draw(self.x,self.y+85, f'{self.stamina}', (255, 255, 255))
+        draw_rectangle(*self.get_bb())
 
+    def get_bb(self):
+        return self.x-40, self.y-70,self.x+40,self.y+70
 
 class Rhino:
     def __init__(self):
@@ -126,13 +136,16 @@ class Rhino:
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
         self.x += 1 * RUN_SPEED_PPS * game_framework.frame_time/1.8
-        if self.x > 1060:
-            self.x = 1060
+        if self.x > 900:
+            self.x = 900
     def draw(self):
         if self.state == 0:
             self.image.clip_draw(int(self.frame) * 128, 0, 128,149, self.x, self.y,166.4,193.7)
         self.font.draw(self.x-10 , self.y + 74, f'{self.stamina}', (255, 255, 255))
+        draw_rectangle(*self.get_bb())
 
+    def get_bb(self):
+        return self.x-40, self.y-60,self.x+40,self.y+60
 
 class Mace_1():
     def __init__(self):
@@ -148,8 +161,12 @@ class Mace_1():
             self.x = 1060
 
     def draw(self):
-        self.image.clip_draw(int(self.frame) * 65, 0, 65, 57, self.x, self.y, 131.6, 114)
+        if self.x <1000:
+            self.image.clip_draw(int(self.frame) * 65, 0, 65, 57, self.x, self.y, 131.6, 114)
+        draw_rectangle(*self.get_bb())
 
+    def get_bb(self):
+        return self.x-40, self.y-60,self.x+40,self.y+60
 class Mace_2():
     def __init__(self):
         global x
@@ -167,7 +184,10 @@ class Mace_2():
     def draw(self):
         if self.time<6:
             self.image.clip_draw(int(self.frame) * 161, 0, 161, 71, self.x+230, self.y-100, 330,228)
+        draw_rectangle(*self.get_bb())
 
+    def get_bb(self):
+        return self.x-40, self.y-60,self.x+40,self.y+60
 
 class Mace_3():
     def __init__(self):
@@ -313,13 +333,18 @@ def update():
         mace_3.update()
     player.update()
     p_time =p_time + 0.1
+    for a, b, group in game_world.all_collision_pairs():
+        if collide(a, b):
+            print('COLLISION ', group)
+            a.handle_collision(b, group)
+            b.handle_collision(a, group)
 
 def draw():
     global p_time,food,mana
     clear_canvas()
     draw_world()
     if p_time > 3.0:
-        if mana < 40:
+        if mana < 100:
             mana = mana + 1
         if food < 40:
             food = food + 1
@@ -347,3 +372,14 @@ def attack_2():
 
 def attack_3():
     maces_3.append(Mace_3())
+
+def collide(a,b):
+    la, ba, ra, ta = a.get_bb()
+    lb, bb, rb, tb = b.get_bb()
+
+    if la > rb: return False
+    if ra < lb: return False
+    if ta < bb: return False
+    if ba > tb: return False
+
+    return True

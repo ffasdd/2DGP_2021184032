@@ -319,7 +319,7 @@ def draw():
     clear_canvas()
     draw_world()
     if p_time > 3.0:
-        if mana < 40:
+        if mana < 100:
             mana = mana + 1
         if food < 40:
             food = food + 1
