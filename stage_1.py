@@ -76,6 +76,8 @@ class Player:
 
     def get_bb(self):
         return self.x-60, self.y-50,self.x+60,self.y+80
+    def handle_collision(self, other, group):
+        pass
 class Mouse:
     def __init__(self):
         global x
@@ -99,6 +101,9 @@ class Mouse:
 
     def get_bb(self):
         return self.x-30, self.y-50,self.x+30,self.y+50
+    def handle_collision(self, other, group):
+        if group == 'player:mouse':
+            print('충돌입니다')
 class Dragon:
     def __init__(self):
         global x
@@ -260,79 +265,68 @@ mouses = []
 dragons = []
 rhinos = []
 
-maces_1 =[]
-maces_2=[]
-maces_3=[]
+maces_1 = []
+maces_2 = []
+maces_3 = []
 
 food = 40
-mana=100
+mana = 100
 
 ui =None
 move = False
 running = True
 dir = 0
-x =0
+x = 0
 
 p_time =0.0
 def draw_world():
-    global font, background
+    global background, ui
     background.draw()
     ui.draw()
-    player.draw()
-    for mouse in mouses:
-        mouse.draw()
-    for dragon in dragons:
-        dragon.draw()
-    for rhino in rhinos:
-        rhino.draw()
 
-    for mace_1 in maces_1:
-        mace_1.draw()
-    for mace_2 in maces_2:
-        mace_2.draw()
-    for mace_3 in maces_3:
-        mace_3.draw()
+    for game_object in game_world.all_objects():
+        game_object.draw()
+
+    # player.draw()
+    # for mouse in mouses:
+    #     mouse.draw()
+    #
+    # for dragon in dragons:
+    #     dragon.draw()
+    # for rhino in rhinos:
+    #     rhino.draw()
+    #
+    # for mace_1 in maces_1:
+    #     mace_1.draw()
+    # for mace_2 in maces_2:
+    #     mace_2.draw()
+    # for mace_3 in maces_3:
+    #     mace_3.draw()
 
 
 def enter():
-    global player, running, background, ui,p_time
-    p_time=0.0
-    ui= UI()
+    global player, running, background, ui, p_time
+    p_time = 0.0
+    ui = UI()
     player = Player()
     background = BG()
+    # game_world.add_object(background, 0)
+    game_world.add_object(player, 0)
     running = True
 
-def exit():
-    for mouse in mouses:
-        del mouse
-    for dragon in dragons:
-        del dragon
-    for rhino in rhinos:
-        del rhino
-    for mace_1 in maces_1:
-        del mace_1
-    for mace_2 in maces_2:
-        del mace_2
-    for mace_3 in maces_3:
-        del mace_3
 
+def exit():
+
+    game_world.clear()
 
 def update():
-    global p_time,mana,food
-    for mouse in mouses:
-        mouse.update()
-    for dragon in dragons:
-        dragon.update()
-    for rhino in rhinos:
-        rhino.update()
-    for mace_1 in maces_1:
-        mace_1.update()
-    for mace_2 in maces_2:
-        mace_2.update()
-    for mace_3 in maces_3:
-        mace_3.update()
-    player.update()
-    p_time =p_time + 0.1
+
+    for game_object in game_world.all_objects():
+        game_object.update()
+
+    global p_time
+    p_time = p_time + 0.1
+
     for a, b, group in game_world.all_collision_pairs():
         if collide(a, b):
             print('COLLISION ', group)
@@ -340,7 +334,7 @@ def update():
             b.handle_collision(a, group)
 
 def draw():
-    global p_time,food,mana
+    global p_time, food, mana
     clear_canvas()
     draw_world()
     if p_time > 3.0:
@@ -359,19 +353,38 @@ def resume():
 
 def add_mouse():
     mouses.append(Mouse())
+    for game_object in mouses:
+        game_world.add_object(game_object, 0)
+        game_world.add_collision_pairs(player, game_object, 'player:mouse')
+
+
 def add_dragon():
     dragons.append(Dragon())
+    for game_object in dragons:
+        game_world.add_object(game_object, 0)
+        game_world.add_collision_pairs(player, game_object, 'player:dragon')
+
 def add_rhinos():
     rhinos.append(Rhino())
+    for game_object in rhinos:
+        game_world.add_object(game_object, 0)
+        game_world.add_collision_pairs(player, game_object, 'player:rhino')
 
 def attack_1():
     maces_1.append(Mace_1())
+    for game_object in maces_1:
+        game_world.add_object(game_object, 0)
+        game_world.add_collision_pairs(player, game_object, 'player:maces_1')
 
 def attack_2():
     maces_2.append(Mace_2())
+    for game_object in maces_2:
+        game_world.add_object(game_object, 0)
 
 def attack_3():
     maces_3.append(Mace_3())
+    for game_object in maces_3:
+        game_world.add_object(game_object, 0)
 
 def collide(a,b):
     la, ba, ra, ta = a.get_bb()
