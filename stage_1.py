@@ -32,6 +32,7 @@ class UI:
 
     def draw(self):
         self.image.draw(530, 160)
+
 class Player:
     def __init__(self):
         self.x, self.y = 0,400
@@ -78,6 +79,7 @@ class Player:
         return self.x-60, self.y-50,self.x+60,self.y+80
     def handle_collision(self, other, group):
         pass
+
 class Mouse:
     def __init__(self):
         global x
@@ -127,7 +129,6 @@ class Dragon:
 
     def get_bb(self):
         return self.x-40, self.y-70,self.x+40,self.y+70
-
 class Rhino:
     def __init__(self):
         global x
@@ -193,7 +194,6 @@ class Mace_2():
 
     def get_bb(self):
         return self.x-40, self.y-60,self.x+40,self.y+60
-
 class Mace_3():
     def __init__(self):
         global x
@@ -212,6 +212,52 @@ class Mace_3():
         if self.time < 6:
             self.image.clip_draw(int(self.frame) * 91, 0, 91, 86, self.x-10, self.y + 50, 182,172)
 
+# class enemy():
+#     def __init__(self):
+#         self.x, self.y = 0,400
+#         self.direction=1
+#         self.frame = 0
+#         self.image = load_image('resource/player/player_move.png')
+#         self.font = load_font('ENCR10B.TTF', 40)
+#         self.stamina = 100
+#
+#     def update(self):
+#         global x
+#         self.frame =  (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+#         if move == True:
+#             if dir == -1:
+#                 self.direction = -1
+#                 self.x += self.direction * RUN_SPEED_PPS * game_framework.frame_time
+#                 x =self.x
+#             elif dir == 1:
+#                 self.direction = 1
+#                 self.x += self.direction * RUN_SPEED_PPS * game_framework.frame_time
+#                 x=self.x
+#         if self.x > 800:
+#             self.x=800
+#         elif self.x<0:
+#             self.x = 0
+#
+#     def draw(self):
+#         if move == True:
+#             if dir == 1:
+#                 self.image.clip_draw(int(self.frame)* 210, 0, 205, 120, self.x, self.y,307.5,180)
+#             elif dir == -1:
+#                 self.image.clip_draw(int(self.frame)* 210, 120, 205, 120, self.x, self.y,307.5,180)
+#         elif move == False:
+#             if dir == 1:
+#                 self.image.clip_draw(3, 0, 210, 120, self.x, self.y,307.5,180)
+#             elif dir == -1:
+#                 self.image.clip_draw(3, 120, 210, 120, self.x, self.y,307.5,180)
+#         self.font.draw(90,260, f'{food}', (255, 255, 255))
+#         self.font.draw(800,260, f'{mana}', (255, 255, 255))
+#         self.font.draw(self.x-30,self.y+90, f'{self.stamina}', (255, 255, 255))
+#         draw_rectangle(*self.get_bb())
+#
+#     def get_bb(self):
+#         return self.x-60, self.y-50,self.x+60,self.y+80
+#     def handle_collision(self, other, group):
+#         pass
 
 def handle_events():
     global running, dir, move, food, mana
@@ -302,7 +348,6 @@ def draw_world():
     #     mace_2.draw()
     # for mace_3 in maces_3:
     #     mace_3.draw()
-
 
 def enter():
     global player, running, background, ui, p_time
