@@ -8,8 +8,8 @@ import game_world
 
 running = True
 
-PIXEL_PER_METER = (10.0 / 0.4) # 10 pixel 30 cm
-RUN_SPEED_KMPH = 30.0 # Km / Hour
+PIXEL_PER_METER = (10.0 / 0.4)  # 10 pixel 30 cm
+RUN_SPEED_KMPH = 30.0  # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -36,7 +36,7 @@ class UI:
 class Player:
     def __init__(self):
         self.x, self.y = 0,400
-        self.direction=1
+        self.direction = 1
         self.frame = 0
         self.image = load_image('resource/player/player_move.png')
         self.font = load_font('ENCR10B.TTF', 40)
@@ -44,19 +44,19 @@ class Player:
 
     def update(self):
         global x
-        self.frame =  (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         if move == True:
             if dir == -1:
                 self.direction = -1
                 self.x += self.direction * RUN_SPEED_PPS * game_framework.frame_time
-                x =self.x
+                x = self.x
             elif dir == 1:
                 self.direction = 1
                 self.x += self.direction * RUN_SPEED_PPS * game_framework.frame_time
-                x=self.x
+                x = self.x
         if self.x > 800:
-            self.x=800
-        elif self.x<0:
+            self.x = 800
+        elif self.x < 0:
             self.x = 0
 
     def draw(self):
@@ -83,8 +83,8 @@ class Player:
 class Mouse:
     def __init__(self):
         global x
-        self.x, self.y = -x,400
-        self.state = 0 # 0=walk/1=attack/2=die
+        self.x, self.y = -x, 400
+        self.state = 0  # 0 = walk / 1 = attack / 2 = die
         self.frame = 0
         self.image = load_image('resource/player/mouse.png')
         self.font = load_font('ENCR10B.TTF', 40)
@@ -93,8 +93,10 @@ class Mouse:
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 6
         self.x += 1 * RUN_SPEED_PPS * game_framework.frame_time
-        if self.x > 900:
-            self.x = 900
+        if self.x > 1700 - x:
+            self.x = 1700 - x
+
+
     def draw(self):
         if self.state == 0:
             self.image.clip_draw(int(self.frame) * 57, 0, 57,51, self.x, self.y,100,120)
@@ -102,7 +104,8 @@ class Mouse:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x-30, self.y-50,self.x+30,self.y+50
+        return self.x-30, self.y-50, self.x+30, self.y+50
+
     def handle_collision(self, other, group):
         if group == 'player:mouse':
             print('충돌입니다')
@@ -119,8 +122,8 @@ class Dragon:
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
         self.x += 1 * RUN_SPEED_PPS * game_framework.frame_time
-        if self.x > 900:
-            self.x = 900
+        if self.x > 1700 - x:
+            self.x = 1700 - x
     def draw(self):
         if self.state == 0:
             self.image.clip_draw(int(self.frame) * 170, 0, 170,170, self.x, self.y,200,200)
@@ -129,11 +132,15 @@ class Dragon:
 
     def get_bb(self):
         return self.x-40, self.y-70,self.x+40,self.y+70
+
+    def handle_collision(self, other, group):
+        if group == 'player:dragon':
+            print('충돌입니다')
 class Rhino:
     def __init__(self):
         global x
         self.x, self.y = -x,400
-        self.state = 0 #  0=walk/1=attack/2=die
+        self.state = 0 # 0 = walk / 1 = attack / 2 = die
         self.frame = 0
         self.image = load_image('resource/player/rhinoceros.png')
         self.font = load_font('ENCR10B.TTF', 40)
@@ -142,8 +149,8 @@ class Rhino:
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
         self.x += 1 * RUN_SPEED_PPS * game_framework.frame_time/1.8
-        if self.x > 900:
-            self.x = 900
+        if self.x > 1700 - x:
+            self.x = 1700 - x
     def draw(self):
         if self.state == 0:
             self.image.clip_draw(int(self.frame) * 128, 0, 128,149, self.x, self.y,166.4,193.7)
@@ -152,6 +159,9 @@ class Rhino:
 
     def get_bb(self):
         return self.x-40, self.y-60,self.x+40,self.y+60
+    def handle_collision(self, other, group):
+        if group == 'player:rhino':
+            print('충돌입니다')
 
 class Mace_1():
     def __init__(self):
@@ -162,17 +172,20 @@ class Mace_1():
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
-        self.x += 1 * RUN_SPEED_PPS * game_framework.frame_time/0.3
-        if self.x > 1060:
-            self.x = 1060
+        self.x += 1 * RUN_SPEED_PPS * game_framework.frame_time / 0.3
+        if self.x > 1700 - x:
+            game_world.remove_object(self)
 
     def draw(self):
-        if self.x <1000:
+        if self.x < 1700 - x:
             self.image.clip_draw(int(self.frame) * 65, 0, 65, 57, self.x, self.y, 131.6, 114)
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.x-40, self.y-60,self.x+40,self.y+60
+    def handle_collision(self, other, group):
+        if group == 'player:mace1':
+            print('충돌입니다')
 class Mace_2():
     def __init__(self):
         global x
@@ -182,18 +195,22 @@ class Mace_2():
         self.time = 0.0
 
     def update(self):
-        self.time +=0.1
+        self.time += 0.1
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
         if self.x > 1060:
             self.x = 1060
 
     def draw(self):
-        if self.time<6:
+        if self.time < 6:
             self.image.clip_draw(int(self.frame) * 161, 0, 161, 71, self.x+230, self.y-100, 330,228)
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.x-40, self.y-60,self.x+40,self.y+60
+
+    def handle_collision(self, other, group):
+        if group == 'player:mace2':
+            print('충돌입니다')
 class Mace_3():
     def __init__(self):
         global x
@@ -210,7 +227,11 @@ class Mace_3():
 
     def draw(self):
         if self.time < 6:
-            self.image.clip_draw(int(self.frame) * 91, 0, 91, 86, self.x-10, self.y + 50, 182,172)
+            self.image.clip_draw(int(self.frame) * 91, 0, 91, 86, self.x-10, self.y + 50, 182, 172)
+
+    def handle_collision(self, other, group):
+        if group == 'player:mace3':
+            print('충돌입니다')
 
 # class enemy():
 #     def __init__(self):
@@ -302,7 +323,7 @@ def handle_events():
                     exit()
                     game_framework.change_state(stage_select_state)
         elif event.type == SDL_KEYUP:
-            move =False
+            move = False
 
 player = None
 background =None
@@ -325,6 +346,7 @@ dir = 0
 x = 0
 
 p_time =0.0
+
 def draw_world():
     global background, ui
     background.draw()
@@ -332,22 +354,6 @@ def draw_world():
 
     for game_object in game_world.all_objects():
         game_object.draw()
-
-    # player.draw()
-    # for mouse in mouses:
-    #     mouse.draw()
-    #
-    # for dragon in dragons:
-    #     dragon.draw()
-    # for rhino in rhinos:
-    #     rhino.draw()
-    #
-    # for mace_1 in maces_1:
-    #     mace_1.draw()
-    # for mace_2 in maces_2:
-    #     mace_2.draw()
-    # for mace_3 in maces_3:
-    #     mace_3.draw()
 
 def enter():
     global player, running, background, ui, p_time
@@ -361,11 +367,9 @@ def enter():
 
 
 def exit():
-
     game_world.clear()
 
 def update():
-
     for game_object in game_world.all_objects():
         game_object.update()
 
@@ -419,7 +423,7 @@ def attack_1():
     maces_1.append(Mace_1())
     for game_object in maces_1:
         game_world.add_object(game_object, 0)
-        game_world.add_collision_pairs(player, game_object, 'player:maces_1')
+        game_world.add_collision_pairs(player, game_object, 'player:mace_1')
 
 def attack_2():
     maces_2.append(Mace_2())
