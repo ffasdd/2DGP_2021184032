@@ -5,6 +5,10 @@ from pico2d import *
 import game_framework
 import stage_select_state
 import game_world
+import game_over
+import game_clear
+import pause_state
+
 
 running = True
 
@@ -30,8 +34,11 @@ class UI:
     def __init__(self):
         self.image = load_image('resource/ui.png')
 
+
     def draw(self):
         self.image.draw(530, 160)
+
+
 
 class Player:
     def __init__(self):
@@ -59,6 +66,11 @@ class Player:
         elif self.x < 0:
             self.x = 0
 
+        if self.x == 800:
+            game_framework.change_state(game_clear)
+        if self.stamina <= 0:
+            game_framework.change_state(game_over)
+
     def draw(self):
         if move == True:
             if dir == 1:
@@ -79,7 +91,8 @@ class Player:
         return self.x-60, self.y-50,self.x+60,self.y+80
     def handle_collision(self, other, group):
         pass
-
+    def set_collision(self, input):
+        self.iscollision = input
 class Mouse:
     def __init__(self):
         global x
@@ -90,6 +103,7 @@ class Mouse:
         self.image = load_image('resource/player/mouse.png')
         self.font = load_font('ENCR10B.TTF', 40)
         self.stamina = 20
+        self.time = 0.0
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 6
@@ -98,12 +112,14 @@ class Mouse:
             if self.x > 1700 - x:
                 self.x = 1700 - x
 
+        elif self.iscollision == 1:
+            self.time += 0.1
     def draw(self):
         if self.stamina < 0:
             game_world.remove_object(self)
         elif self.stamina > 0:
             if self.state == 0:
-                self.image.clip_draw(int(self.frame) * 57, 0, 57,51, self.x, self.y,100,120)
+                self.image.clip_draw(int(self.frame) * 57, 0, 57, 51, self.x, self.y,100,120)
             self.font.draw(self.x-20,self.y+51, f'{self.stamina}', (255, 255, 255))
             draw_rectangle(*self.get_bb())
 
@@ -113,6 +129,10 @@ class Mouse:
     def handle_collision(self, other, group):
         if group == 'enemy:mouse':
             self.iscollision = 1
+            if self.time >= 3.0:
+                self.time = 0.0
+                other.stamina -= 10
+                self.font.draw(self.x + 10, self.y + 94, f'{-30}', (255, 255, 255))
 
     def set_collision(self, input):
         self.iscollision = input
@@ -128,6 +148,7 @@ class Dragon:
         self.image = load_image('resource/player/dragon.png')
         self.font = load_font('ENCR10B.TTF', 40)
         self.stamina = 40
+        self.time = 0.0
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
@@ -135,6 +156,8 @@ class Dragon:
             self.x += 1 * RUN_SPEED_PPS * game_framework.frame_time
             if self.x > 1700 - x:
                 self.x = 1700 - x
+        elif self.iscollision == 1:
+            self.time += 0.1
     def draw(self):
         if self.stamina < 0:
             game_world.remove_object(self)
@@ -150,7 +173,10 @@ class Dragon:
     def handle_collision(self, other, group):
         if group == 'enemy:dragon':
             self.iscollision = 1
-
+            if self.time >= 4.0:
+                self.time = 0.0
+                other.stamina -= 20
+                self.font.draw(self.x + 10, self.y + 94, f'{-30}', (255, 255, 255))
     def set_collision(self, input):
         self.iscollision = input
 
@@ -164,6 +190,7 @@ class Rhino:
         self.image = load_image('resource/player/rhinoceros.png')
         self.font = load_font('ENCR10B.TTF', 40)
         self.stamina = 80
+        self.time = 0.0
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
@@ -171,13 +198,16 @@ class Rhino:
             self.x += 1 * RUN_SPEED_PPS * game_framework.frame_time/1.8
             if self.x > 1700 - x:
                 self.x = 1700 - x
+        elif self.iscollision == 1:
+            self.time += 0.1
+
     def draw(self):
         if self.stamina < 0:
             game_world.remove_object(self)
-        elif self.stamina >0:
+        elif self.stamina > 0:
             if self.state == 0:
                 self.image.clip_draw(int(self.frame) * 128, 0, 128,149, self.x, self.y,166.4,193.7)
-            self.font.draw(self.x-10 , self.y + 74, f'{self.stamina}', (255, 255, 255))
+            self.font.draw(self.x-10, self.y + 74, f'{self.stamina}', (255, 255, 255))
             draw_rectangle(*self.get_bb())
 
     def get_bb(self):
@@ -185,6 +215,10 @@ class Rhino:
     def handle_collision(self, other, group):
         if group == 'enemy:rhino':
             self.iscollision = 1
+            if self.time >= 6.0:
+                self.time = 0.0
+                other.stamina -= 30
+                self.font.draw(self.x + 10, self.y + 94, f'{-30}', (255, 255, 255))
 
     def set_collision(self, input):
         self.iscollision = input
@@ -237,11 +271,22 @@ class Mace_2():
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x-40, self.y-60,self.x+40,self.y+60
+        return self.x-40, self.y-60, self.x+40, self.y+60
 
     def handle_collision(self, other, group):
-        if group == 'player:mace2':
-            print('충돌입니다')
+        if group == 'mouses:mace_2':
+            if other.stamina < 20:
+                other.stamina += 20
+        elif group == 'rhinos:mace_2':
+            if other.stamina < 80:
+                other.stamina += 40
+        elif group == 'dragons:mace_2':
+            if other.stamina < 40:
+                other.stamina += 30
+
+
+    def set_collision(self, input):
+        self.iscollision = input
 class Mace_3():
     def __init__(self):
         global x
@@ -266,22 +311,24 @@ class Mace_3():
 
 class enemy():
     def __init__(self):
-        self.x, self.y = random.randint(1500,1700), 400
+        self.x, self.y = random.randint(1500, 1700), 400
         self.state = 0  # 충돌 = 0 , 충돌 아닌 상황 = 1
         self.iscollision = 0
         self.frame = 0
         self.image = load_image('resource/monster/Nzombie.png')
         self.font = load_font('ENCR10B.TTF', 40)
         self.stamina = 50
+        self.time = 0.0
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
         if self.iscollision == 0:
             self.x += -1 * RUN_SPEED_PPS * game_framework.frame_time / 1.8
-
+        elif self.iscollision == 1:
+            self.time += 0.1
     def draw(self):
         self.image.clip_draw(int(self.frame) * 50, 0, 50, 65, self.x, self.y, 100, 130)
-        if self.stamina < 0:
+        if self.stamina <= 0:
             game_world.remove_object(self)
         elif self.stamina > 0:
             self.font.draw(self.x - 10, self.y + 74, f'{self.stamina}', (255, 255, 255))
@@ -293,8 +340,18 @@ class enemy():
     def handle_collision(self, other, group):
         if group == 'enemy:mouse' or group == 'enemy:dragon' or group == 'enemy:rhino':
             self.iscollision = 1
+            if self.time >= 6.0:
+                self.time = 0.0
+                other.stamina -= 5
+                self.font.draw(self.x + 10, self.y + 94, f'{-30}', (255, 255, 255))
         elif group == 'enemy:mace_1':
             self.stamina -=1
+        elif group == 'enemy:player':
+            self.iscollision = 1
+            if self.time >= 6.0:
+                self.time = 0.0
+                other.stamina -= 5
+                self.font.draw(self.x + 10, self.y + 94, f'{-30}', (255, 255, 255))
 
     def set_collision(self, input):
         self.iscollision = input
@@ -339,8 +396,7 @@ def handle_events():
                         mana = mana-50
                         food = 40
                 case pico2d.SDLK_ESCAPE:
-                    exit()
-                    game_framework.change_state(stage_select_state)
+                    game_framework.push_state(pause_state)
         elif event.type == SDL_KEYUP:
             move = False
 
@@ -365,6 +421,7 @@ move = False
 running = True
 dir = 0
 x = 0
+bgm=None
 
 p_time =0.0
 
@@ -377,19 +434,26 @@ def draw_world():
         game_object.draw()
 
 def enter():
-    global player, running, background, ui, p_time, enemies
+    global player, running, background, ui, p_time, enemies, bgm
     p_time = 0.0
     ui = UI()
     player = Player()
     background = BG()
     # game_world.add_object(background, 0)
     game_world.add_object(player, 0)
-    enemies = [enemy() for i in range(1)]
+    enemies = [enemy() for i in range(5)]
     game_world.add_objects(enemies, 0)
     running = True
-
+    game_world.add_collision_pairs(enemies, player, 'enemy:player')
+    bgm = load_music('resource/bgm.mp3')
+    bgm.set_volume(32)
+    bgm.repeat_play()
+def pause():
+    pass
 
 def exit():
+    global bgm
+    bgm.stop
     game_world.clear()
 
 def update():
@@ -406,6 +470,9 @@ def update():
         else:
             a.set_collision(False)
             b.set_collision(False)
+    if p_time == 30.0:
+        enemies = [enemy() for i in range(5)]
+        game_world.add_objects(enemies, 0)
 
 
 def draw():
@@ -420,8 +487,6 @@ def draw():
         p_time = 0.0
     update_canvas()
 
-def pause():
-    pass
 
 def resume():
     pass
@@ -431,7 +496,6 @@ def add_mouse():
     for game_object in mouses:
         game_world.add_object(game_object, 0)
         game_world.add_collision_pairs(enemies, game_object, 'enemy:mouse')
-
 
 def add_dragon():
     dragons.append(Dragon())
@@ -455,6 +519,9 @@ def attack_2():
     maces_2.append(Mace_2())
     for game_object in maces_2:
         game_world.add_object(game_object, 0)
+        game_world.add_collision_pairs(mouses, game_object, 'mouses:mace_2')
+        game_world.add_collision_pairs(rhinos, game_object, 'rhinos:mace_2')
+        game_world.add_collision_pairs(dragons, game_object, 'dragons:mace_2')
 
 def attack_3():
     maces_3.append(Mace_3())
